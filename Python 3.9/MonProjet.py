@@ -57,6 +57,7 @@ class Ui_MainWindow(object):
         self.mdpEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.mdpEdit.setGeometry(QtCore.QRect(210, 90, 113, 20))
         self.mdpEdit.setObjectName("mdpEdit")
+        self.mdpEdit.setEchoMode(QtWidgets.QLineEdit.Password)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 531, 21))
