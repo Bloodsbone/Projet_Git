@@ -55,6 +55,10 @@ class Ui_Login(QtWidgets.QWidget):
 
 class Ui_Principal(QtWidgets.QWidget):
 
+    switch_window = QtCore.pyqtSignal()
+
+    def logout(self):
+        self.switch_window.emit()
 
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
@@ -69,8 +73,8 @@ class Ui_Principal(QtWidgets.QWidget):
         self.tableFilmView.setGeometry(QtCore.QRect(570, 40, 371, 201))
         self.tableFilmView.setObjectName("tableFilmView")
         self.pushLogoffButton = QtWidgets.QPushButton(self.centralwidget)
-        #self.pushLogoffButton.clicked.connect(self.logoff)
-        #self.pushLogoffButton.clicked.connect(Principal.close)
+        self.pushLogoffButton.clicked.connect(self.logout)
+        self.pushLogoffButton.clicked.connect(self.close)
         self.pushLogoffButton.setGeometry(QtCore.QRect(520, 270, 75, 23))
         self.pushLogoffButton.setObjectName("pushLogoffButton")
         self.pushClientModButton = QtWidgets.QPushButton(self.centralwidget)
@@ -117,8 +121,14 @@ class Controller:
 
     def showPrincipal(self, *args):
         self.windowPrincipal = Ui_Principal()
+        self.windowPrincipal.switch_window.connect(self.showLogin)
         self.windowLogin.close()
         self.windowPrincipal.show()
+
+    #def logOff(self, *args):
+        #self.windowLogin = Ui_Login()
+        #self.windowPrincipal.close()
+        #self.windowLogin.show()
 
 
 def main():
