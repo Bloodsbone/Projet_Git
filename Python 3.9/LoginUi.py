@@ -1,8 +1,24 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
+import sqlite3
 
 
 class Ui_Login(QtWidgets.QWidget):
+
+    switch_window = QtCore.pyqtSignal()
+
+    def login(self):
+        uname = self.usagerEdit.text()
+        passw = self.mdpEdit.text()
+        connection = sqlite3.connect("db.db")
+        result = connection.execute("SELECT * FROM Login WHERE UserCode = ? AND Password = ?", (uname, passw))
+        if result.fetchall():
+            print("connexion réussi")
+            self.switch_window.emit()
+
+        else:
+            print("invalid login")
+
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
         self.setObjectName("Login")
@@ -10,6 +26,7 @@ class Ui_Login(QtWidgets.QWidget):
         self.loginButton = QtWidgets.QPushButton(self)
         self.loginButton.setGeometry(QtCore.QRect(240, 150, 75, 23))
         self.loginButton.setObjectName("loginButton")
+        self.loginButton.clicked.connect(self.login)
         self.usager_label = QtWidgets.QLabel(self)
         self.usager_label.setGeometry(QtCore.QRect(150, 60, 47, 13))
         self.usager_label.setObjectName("usager_label")
@@ -37,6 +54,8 @@ class Ui_Login(QtWidgets.QWidget):
 
 
 class Ui_Principal(QtWidgets.QWidget):
+
+
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
         self.setObjectName("Principal")
@@ -93,11 +112,14 @@ class Controller:
 
     def showLogin(self, *args):
         self.windowLogin = Ui_Login()
+        self.windowLogin.switch_window.connect(self.showPrincipal)
         self.windowLogin.show()
 
     def showPrincipal(self, *args):
         self.windowPrincipal = Ui_Principal()
+        self.windowLogin.close()
         self.windowPrincipal.show()
+
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
