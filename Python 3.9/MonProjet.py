@@ -1,21 +1,11 @@
+import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sqlite3
-import sys
-from PyQt5.QtWidgets import QMessageBox
 
 
+class Ui_Login(QtWidgets.QWidget):
 
-
-class Ui_MainWindow(object):
-
-    def openWindow(self):
-        self.window = QtWidgets.QMainWindow()
-        self.ui = Ui_Principal()
-        self.ui.setupUi(self.window, MainWindow)
-        self.window.show()
-        MainWindow.hide()
-
-
+    switch_window = QtCore.pyqtSignal()
 
     def login(self):
         uname = self.usagerEdit.text()
@@ -23,70 +13,58 @@ class Ui_MainWindow(object):
         connection = sqlite3.connect("db.db")
         result = connection.execute("SELECT * FROM Login WHERE UserCode = ? AND Password = ?", (uname, passw))
         if result.fetchall():
-            print("connexion réussi login")
-            self.openWindow()
-
-
-
+            print("connexion réussi")
+            self.switch_window.emit()
 
         else:
             print("invalid login")
 
-
-    def setupUi(self, MainWindow):
-
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(531, 256)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.loginButton = QtWidgets.QPushButton(self.centralwidget)
+    def __init__(self):
+        QtWidgets.QWidget.__init__(self)
+        self.setObjectName("Login")
+        self.resize(531, 256)
+        self.loginButton = QtWidgets.QPushButton(self)
         self.loginButton.setGeometry(QtCore.QRect(240, 150, 75, 23))
         self.loginButton.setObjectName("loginButton")
         self.loginButton.clicked.connect(self.login)
-        self.usager_label = QtWidgets.QLabel(self.centralwidget)
+        self.usager_label = QtWidgets.QLabel(self)
         self.usager_label.setGeometry(QtCore.QRect(150, 60, 47, 13))
         self.usager_label.setObjectName("usager_label")
-        self.mdp_label = QtWidgets.QLabel(self.centralwidget)
+        self.mdp_label = QtWidgets.QLabel(self)
         self.mdp_label.setGeometry(QtCore.QRect(120, 90, 71, 16))
         self.mdp_label.setObjectName("mdp_label")
-        self.Login_Label = QtWidgets.QLabel(self.centralwidget)
+        self.Login_Label = QtWidgets.QLabel(self)
         self.Login_Label.setGeometry(QtCore.QRect(170, 10, 241, 21))
         font = QtGui.QFont()
         font.setPointSize(18)
         self.Login_Label.setFont(font)
         self.Login_Label.setObjectName("Login_Label")
-        self.usagerEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.usagerEdit = QtWidgets.QLineEdit(self)
         self.usagerEdit.setGeometry(QtCore.QRect(210, 60, 113, 20))
         self.usagerEdit.setObjectName("usagerEdit")
-        self.mdpEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.mdpEdit = QtWidgets.QLineEdit(self)
         self.mdpEdit.setGeometry(QtCore.QRect(210, 90, 113, 20))
-        self.mdpEdit.setObjectName("mdpEdit")
         self.mdpEdit.setEchoMode(QtWidgets.QLineEdit.Password)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 531, 21))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.loginButton.setText(_translate("MainWindow", "Connexion"))
-        self.usager_label.setText(_translate("MainWindow", "Usager:"))
-        self.mdp_label.setText(_translate("MainWindow", "Mot de passe:"))
-        self.Login_Label.setText(_translate("MainWindow", "Fenêtre de Connexion"))
+        self.mdpEdit.setObjectName("mdpEdit")
+        self.setWindowTitle("Login")
+        self.loginButton.setText("Connexion")
+        self.usager_label.setText("Usager:")
+        self.mdp_label.setText("Mot de passe:")
+        self.Login_Label.setText("Fenêtre de Connexion")
 
 
-class Ui_Principal(object):
-    def setupUi(self, Principal, MainWindow):
-        Principal.setObjectName("Principal")
-        Principal.resize(1012, 351)
-        self.centralwidget = QtWidgets.QWidget(Principal)
+class Ui_Principal(QtWidgets.QWidget):
+
+    switch_window = QtCore.pyqtSignal()
+
+    def logout(self):
+        self.switch_window.emit()
+
+    def __init__(self):
+        QtWidgets.QWidget.__init__(self)
+        self.setObjectName("Principal")
+        self.resize(1012, 351)
+        self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
         self.tableClientView = QtWidgets.QTableView(self.centralwidget)
         self.tableClientView.setGeometry(QtCore.QRect(170, 40, 371, 201))
@@ -95,8 +73,8 @@ class Ui_Principal(object):
         self.tableFilmView.setGeometry(QtCore.QRect(570, 40, 371, 201))
         self.tableFilmView.setObjectName("tableFilmView")
         self.pushLogoffButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushLogoffButton.clicked.connect(self.logoff)
-        self.pushLogoffButton.clicked.connect(Principal.close)
+        self.pushLogoffButton.clicked.connect(self.logout)
+        self.pushLogoffButton.clicked.connect(self.close)
         self.pushLogoffButton.setGeometry(QtCore.QRect(520, 270, 75, 23))
         self.pushLogoffButton.setObjectName("pushLogoffButton")
         self.pushClientModButton = QtWidgets.QPushButton(self.centralwidget)
@@ -120,49 +98,44 @@ class Ui_Principal(object):
         font.setPointSize(12)
         self.label_Film.setFont(font)
         self.label_Film.setObjectName("label_Film")
-        Principal.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(Principal)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1012, 21))
-        self.menubar.setObjectName("menubar")
-        Principal.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(Principal)
-        self.statusbar.setObjectName("statusbar")
-        Principal.setStatusBar(self.statusbar)
 
-        self.retranslateUi(Principal)
-        QtCore.QMetaObject.connectSlotsByName(Principal)
-
-    def logoff(self):
-        self.MainWindow = QtWidgets.QMainWindow()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self.MainWindow)
-        self.MainWindow.show()
-        #self.Principal.close()
-
-    def retranslateUi(self, Principal):
-        _translate = QtCore.QCoreApplication.translate
-        Principal.setWindowTitle(_translate("Principal", "MainWindow"))
-        self.pushLogoffButton.setText(_translate("Principal", "Deconnexion"))
-        self.pushClientModButton.setText(_translate("Principal", "Modifier"))
-        self.pushNewButton.setText(_translate("Principal", "Nouveau Client"))
-        self.pushDelButton.setText(_translate("Principal", "Suprimer"))
-        self.labelClient.setText(_translate("Principal", "Client"))
-        self.label_Film.setText(_translate("Principal", "Film"))
+        self.setWindowTitle("MainWindow")
+        self.pushLogoffButton.setText("Deconnexion")
+        self.pushClientModButton.setText("Modifier")
+        self.pushNewButton.setText("Nouveau Client")
+        self.pushDelButton.setText("Suprimer")
+        self.labelClient.setText("Client")
+        self.label_Film.setText("Film")
 
 
 
 
+class Controller:
+    def __init__(self):
+        pass
+
+    def showLogin(self, *args):
+        self.windowLogin = Ui_Login()
+        self.windowLogin.switch_window.connect(self.showPrincipal)
+        self.windowLogin.show()
+
+    def showPrincipal(self, *args):
+        self.windowPrincipal = Ui_Principal()
+        self.windowPrincipal.switch_window.connect(self.showLogin)
+        self.windowLogin.close()
+        self.windowPrincipal.show()
+
+    #def logOff(self, *args):
+        #self.windowLogin = Ui_Login()
+        #self.windowPrincipal.close()
+        #self.windowLogin.show()
 
 
-
-
-
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+    controller = Controller()
+    controller.showLogin()
+    sys.exit((app.exec_()))
 
 if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+    main()
