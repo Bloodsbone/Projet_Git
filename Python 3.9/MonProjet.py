@@ -15,6 +15,8 @@ class Ui_MainWindow(object):
         self.window.show()
         MainWindow.hide()
 
+
+
     def login(self):
         uname = self.usagerEdit.text()
         passw = self.mdpEdit.text()
@@ -23,6 +25,8 @@ class Ui_MainWindow(object):
         if result.fetchall():
             print("connexion réussi login")
             self.openWindow()
+
+
 
 
         else:
@@ -90,7 +94,9 @@ class Ui_Principal(object):
         self.tableFilmView = QtWidgets.QTableView(self.centralwidget)
         self.tableFilmView.setGeometry(QtCore.QRect(570, 40, 371, 201))
         self.tableFilmView.setObjectName("tableFilmView")
-        self.pushLogoffButton = QtWidgets.QPushButton(self.centralwidget, clicked = lambda: logoff())
+        self.pushLogoffButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushLogoffButton.clicked.connect(self.logoff)
+        self.pushLogoffButton.clicked.connect(Principal.close)
         self.pushLogoffButton.setGeometry(QtCore.QRect(520, 270, 75, 23))
         self.pushLogoffButton.setObjectName("pushLogoffButton")
         self.pushClientModButton = QtWidgets.QPushButton(self.centralwidget)
@@ -127,8 +133,11 @@ class Ui_Principal(object):
         QtCore.QMetaObject.connectSlotsByName(Principal)
 
     def logoff(self):
-        self.closeMain(Principal)
-        self.showMain(MainWindow)
+        self.MainWindow = QtWidgets.QMainWindow()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self.MainWindow)
+        self.MainWindow.show()
+        #self.Principal.close()
 
     def retranslateUi(self, Principal):
         _translate = QtCore.QCoreApplication.translate
