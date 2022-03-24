@@ -110,6 +110,22 @@ class Ui_Principal(QtWidgets.QWidget):
         self.label_Film.setText("Film")
 
 class Ui_NewClient(QtWidgets.QWidget):
+
+
+    def newCustFonction(self):
+        prenom = self.lineEditPrenom.text()
+        nom = self.lineEditNom.text()
+        sexe = self.lineEditSexe.text()
+        dateInsc = self.lineEditDateInscription.text()
+        courriel = self.lineEditCourriel.text()
+        password = self.lineEditMdp.text()
+        user_info = [prenom, nom, sexe, dateInsc, courriel, password]
+        conn = sqlite3.connect("db.db")
+        c = conn.cursor()
+        c.execute('INSERT INTO Client (Nom, Prenom, Sexe, Date_Inscription, Courriel, Mot_de_passe) VALUES (?,?,?,?,?,?)', user_info)
+        conn.commit()
+        self.close()
+
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
         self.setObjectName("MainWindow")
@@ -185,6 +201,7 @@ class Ui_NewClient(QtWidgets.QWidget):
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(220, 210, 111, 41))
         self.pushButton.setObjectName("pushButton")
+        self.pushButton.clicked.connect(self.newCustFonction)
         self.label.setText("Prénom")
         self.label_2.setText("Nom")
         self.label_3.setText("Sexe")
@@ -196,6 +213,8 @@ class Ui_NewClient(QtWidgets.QWidget):
 
 
 class Ui_ModClient(QtWidgets.QWidget):
+
+
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
         self.setObjectName("MainWindow")
