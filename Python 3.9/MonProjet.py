@@ -155,6 +155,25 @@ class Ui_Principal(QtWidgets.QWidget):
         self.pushNewButton.setText("Nouveau Client")
         self.pushClientModButton.setText("Modifier")
         self.pushDelButton.setText("Suprimer")
+        self.getData()
+
+
+
+    def getData(self):
+        connection = sqlite3.connect('db.db')
+        cur = connection.cursor()
+        client = 'SELECT * FROM Client'
+        tablerow = 0
+        results = cur.execute(client)
+        self.tableWidget.setRowCount(40)
+        for row in results:
+            self.tableWidget.setItem(tablerow, 0, QtWidgets.QTableWidgetItem(row[0]))
+            self.tableWidget.setItem(tablerow, 1, QtWidgets.QTableWidgetItem(row[1]))
+            self.tableWidget.setItem(tablerow, 2, QtWidgets.QTableWidgetItem(row[2]))
+            self.tableWidget.setItem(tablerow, 3, QtWidgets.QTableWidgetItem(row[3]))
+            self.tableWidget.setItem(tablerow, 4, QtWidgets.QTableWidgetItem(row[4]))
+            self.tableWidget.setItem(tablerow, 5, QtWidgets.QTableWidgetItem(row[5]))
+            tablerow += 1
 
 class Ui_NewClient(QtWidgets.QWidget):
 
