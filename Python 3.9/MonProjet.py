@@ -161,20 +161,18 @@ class Ui_Principal(QtWidgets.QWidget):
 
 
     def getData(self):
-        connection = sqlite3.connect('db.db')
-        cur = connection.cursor()
-        client = 'SELECT * FROM Client'
-        tablerow = 0
-        results = cur.execute(client)
-        self.tableWidget.setRowCount(40)
-        for row in results:
-            self.tableWidget.setItem(tablerow, 0, QtWidgets.QTableWidgetItem(row[0]))
-            self.tableWidget.setItem(tablerow, 1, QtWidgets.QTableWidgetItem(row[1]))
-            self.tableWidget.setItem(tablerow, 2, QtWidgets.QTableWidgetItem(row[2]))
-            self.tableWidget.setItem(tablerow, 3, QtWidgets.QTableWidgetItem(row[3]))
-            self.tableWidget.setItem(tablerow, 4, QtWidgets.QTableWidgetItem(row[4]))
-            self.tableWidget.setItem(tablerow, 5, QtWidgets.QTableWidgetItem(row[5]))
-            tablerow += 1
+        while self.tableWidget.rowCount() > 0:
+            self.tableWidget.setRowCount(0)
+        conn = sqlite3.connect('db.db')
+        cur = conn.cursor()
+        content = 'SELECT * FROM Client'
+        res = cur.execute(content)
+        self.tableWidget.setRowCount(0)
+        for row_index, row_data in enumerate(res):
+            self.tableWidget.insertRow(row_index)
+            for colm_index, colm_data in enumerate(row_data):
+                self.tableWidget.setItem(row_index, colm_index, QtWidgets.QTableWidgetItem(str(colm_data)))
+        conn.close()
 
     def delData(self):
         conn = sqlite3.connect('db.db')
@@ -192,6 +190,7 @@ class Ui_Principal(QtWidgets.QWidget):
                 Mot_de_passe = data[5]
                 cur.execute("DELETE FROM Client WHERE Nom=? AND Prenom=? AND Sexe=? AND Date_Inscription=? AND Courriel=? AND Mot_de_passe=?",(Nom,Prenom,Sexe,Date_Inscription,Courriel,Mot_de_passe))
                 conn.commit()
+        self.getData()
 
 
 class Ui_NewClient(QtWidgets.QWidget):
