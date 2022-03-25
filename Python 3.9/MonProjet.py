@@ -157,8 +157,11 @@ class Ui_Principal(QtWidgets.QWidget):
         self.pushClientModButton.setText("Modifier")
         self.pushDelButton.setText("Suprimer")
         self.getData()
-
-
+        self.pushRefreshButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushRefreshButton.setGeometry(QtCore.QRect(220, 390, 75, 23))
+        self.pushRefreshButton.setObjectName("pushLogoffButton")
+        self.pushRefreshButton.clicked.connect(self.getData)
+        self.pushRefreshButton.setText("Rafraichir")
 
     def getData(self):
         while self.tableWidget.rowCount() > 0:
