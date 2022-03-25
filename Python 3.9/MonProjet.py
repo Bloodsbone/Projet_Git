@@ -127,6 +127,7 @@ class Ui_Principal(QtWidgets.QWidget):
         self.verticalLayout.addWidget(self.pushClientModButton)
         self.pushDelButton = QtWidgets.QPushButton(self.layoutWidget)
         self.pushDelButton.setObjectName("pushDelButton")
+        self.pushDelButton.clicked.connect(self.delData)
         self.verticalLayout.addWidget(self.pushDelButton)
         self.statusbar = QtWidgets.QStatusBar(self)
         self.statusbar.setObjectName("statusbar")
@@ -175,6 +176,24 @@ class Ui_Principal(QtWidgets.QWidget):
             self.tableWidget.setItem(tablerow, 5, QtWidgets.QTableWidgetItem(row[5]))
             tablerow += 1
 
+    def delData(self):
+        conn = sqlite3.connect('db.db')
+        cur = conn.cursor()
+        client = 'SELECT * FROM Client'
+        res = cur.execute(client)
+        for row in enumerate(res):
+            if row[0]  == self.tableWidget.currentRow():
+                data = row[1]
+                Nom = data[0]
+                Prenom = data[1]
+                Sexe = data[2]
+                Date_Inscription = data[3]
+                Courriel = data[4]
+                Mot_de_passe = data[5]
+                cur.execute("DELETE FROM Client WHERE Nom=? AND Prenom=? AND Sexe=? AND Date_Inscription=? AND Courriel=? AND Mot_de_passe=?",(Nom,Prenom,Sexe,Date_Inscription,Courriel,Mot_de_passe))
+                conn.commit()
+
+
 class Ui_NewClient(QtWidgets.QWidget):
 
 
@@ -191,6 +210,7 @@ class Ui_NewClient(QtWidgets.QWidget):
         c.execute('INSERT INTO Client (Nom, Prenom, Sexe, Date_Inscription, Courriel, Mot_de_passe) VALUES (?,?,?,?,?,?)', user_info)
         conn.commit()
         self.close()
+
 
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
