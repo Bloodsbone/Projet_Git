@@ -499,11 +499,28 @@ class Ui_ModClient(QtWidgets.QWidget):
         user_info = [prenom, nom, sexe, dateInsc, courriel, password]
         conn = sqlite3.connect("db.db")
         c = conn.cursor()
-        c.execute(
-            'UPDATE Client set Nom = ?, Prenom = ?, Sexe = ?, Date_Inscription = ?, Courriel = ?, Mot_de_passe = ? WHERE ID = ?',
-            (nom, prenom, sexe, dateInsc, courriel, password, id))
-        conn.commit()
-        self.close()
+        c.execute('SELECT * FROM Client WHERE Courriel = ?', [courriel])
+        result = c.fetchone()
+
+        if result:
+            QtWidgets.QMessageBox.question(self, 'Erreur', 'Courriel déja existant!',
+                                                 QMessageBox.Close)
+
+        elif len(password) < 8:
+            QtWidgets.QMessageBox.question(self, 'Erreur', 'Mot de passe trop court!',
+                                                 QMessageBox.Close)
+
+        else:
+            conn = sqlite3.connect("db.db")
+            c = conn.cursor()
+            c.execute(
+                'UPDATE Client set Nom = ?, Prenom = ?, Sexe = ?, Date_Inscription = ?, Courriel = ?, Mot_de_passe = ? WHERE ID = ?',
+                (nom, prenom, sexe, dateInsc, courriel, password, id))
+            conn.commit()
+            self.close()
+
+
+
 
 
 
