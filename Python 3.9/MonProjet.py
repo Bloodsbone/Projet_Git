@@ -18,7 +18,8 @@ class Ui_Login(QtWidgets.QWidget):
             self.switch_window.emit()
 
         else:
-            print("invalid login")
+            QtWidgets.QMessageBox.question(self, 'Erreur', 'Utilisateur ou mot de passe incorect!',
+                                           QMessageBox.Close)
 
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
@@ -234,9 +235,26 @@ class Ui_NewClient(QtWidgets.QWidget):
         user_info = [prenom, nom, sexe, dateInsc, courriel, password]
         conn = sqlite3.connect("db.db")
         c = conn.cursor()
-        c.execute('INSERT INTO Client (Nom, Prenom, Sexe, Date_Inscription, Courriel, Mot_de_passe) VALUES (?,?,?,?,?,?)', user_info)
-        conn.commit()
-        self.close()
+        c.execute('SELECT * FROM Client WHERE Courriel = ?', [courriel])
+        result = c.fetchone()
+
+        if result:
+            QtWidgets.QMessageBox.question(self, 'Erreur', 'Courriel déja existant!',
+                                                 QMessageBox.Close)
+
+        elif len(password) < 8:
+            QtWidgets.QMessageBox.question(self, 'Erreur', 'Mot de passe trop court!',
+                                                 QMessageBox.Close)
+
+        else:
+            conn = sqlite3.connect("db.db")
+            c = conn.cursor()
+            c.execute(
+                'INSERT INTO Client (Nom, Prenom, Sexe, Date_Inscription, Courriel, Mot_de_passe) VALUES (?,?,?,?,?,?)',
+                user_info)
+            conn.commit()
+            self.close()
+
 
 
     def __init__(self):
