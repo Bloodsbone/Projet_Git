@@ -1,5 +1,6 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 import sqlite3
 
 
@@ -129,7 +130,7 @@ class Ui_Principal(QtWidgets.QWidget):
         self.verticalLayout.addWidget(self.pushClientModButton)
         self.pushDelButton = QtWidgets.QPushButton(self.layoutWidget)
         self.pushDelButton.setObjectName("pushDelButton")
-        self.pushDelButton.clicked.connect(self.delData)
+        self.pushDelButton.clicked.connect(self.messageSuppression)
         self.verticalLayout.addWidget(self.pushDelButton)
         self.statusbar = QtWidgets.QStatusBar(self)
         self.statusbar.setObjectName("statusbar")
@@ -160,12 +161,13 @@ class Ui_Principal(QtWidgets.QWidget):
         self.pushNewButton.setText("Nouveau Client")
         self.pushClientModButton.setText("Modifier")
         self.pushDelButton.setText("Suprimer")
-        self.getData()
         self.pushRefreshButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushRefreshButton.setGeometry(QtCore.QRect(220, 390, 75, 23))
         self.pushRefreshButton.setObjectName("pushLogoffButton")
         self.pushRefreshButton.clicked.connect(self.getData)
         self.pushRefreshButton.setText("Rafraichir")
+        self.getData()
+        self.getDataFilm()
 
     def getData(self):
         while self.tableWidget.rowCount() > 0:
@@ -189,16 +191,35 @@ class Ui_Principal(QtWidgets.QWidget):
         for row in enumerate(res):
             if row[0]  == self.tableWidget.currentRow():
                 data = row[1]
-                Nom = data[0]
-                Prenom = data[1]
-                Sexe = data[2]
-                Date_Inscription = data[3]
-                Courriel = data[4]
-                Mot_de_passe = data[5]
+                Nom = data[1]
+                Prenom = data[2]
+                Sexe = data[3]
+                Date_Inscription = data[4]
+                Courriel = data[5]
+                Mot_de_passe = data[6]
                 cur.execute("DELETE FROM Client WHERE Nom=? AND Prenom=? AND Sexe=? AND Date_Inscription=? AND Courriel=? AND Mot_de_passe=?",(Nom,Prenom,Sexe,Date_Inscription,Courriel,Mot_de_passe))
                 conn.commit()
         self.getData()
 
+    def getDataFilm(self):
+        while self.tableWidget_2.rowCount() > 0:
+            self.tableWidget_2.setRowCount(0)
+        conn = sqlite3.connect('db.db')
+        cur = conn.cursor()
+        content = 'SELECT * FROM Film'
+        res = cur.execute(content)
+        self.tableWidget_2.setRowCount(0)
+        for row_index, row_data in enumerate(res):
+            self.tableWidget_2.insertRow(row_index)
+            for colm_index, colm_data in enumerate(row_data):
+                self.tableWidget_2.setItem(row_index, colm_index, QtWidgets.QTableWidgetItem(str(colm_data)))
+        conn.close()
+
+    def messageSuppression(self):
+        res = QtWidgets.QMessageBox.question(self, 'sure?', 'êtes-vous sur de vouloir supprimer?', QMessageBox.Yes | QMessageBox.No)
+        if res == QtWidgets.QMessageBox.Yes:
+            print("yes")
+            self.delData()
 
 class Ui_NewClient(QtWidgets.QWidget):
 
