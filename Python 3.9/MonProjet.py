@@ -7,19 +7,30 @@ import sqlite3
 class Ui_Login(QtWidgets.QWidget):
 
     switch_window = QtCore.pyqtSignal()
+    switch_windowr = QtCore.pyqtSignal()
 
     def login(self):
         uname = self.usagerEdit.text()
         passw = self.mdpEdit.text()
+        access = "a"
+        accessread = "r"
         connection = sqlite3.connect("db.db")
-        result = connection.execute("SELECT * FROM Login WHERE UserCode = ? AND Password = ?", (uname, passw))
+        result = connection.execute("SELECT * FROM Login WHERE UserCode = ? AND Password = ? AND Access = ?" , (uname, passw, access))
+
         if result.fetchall():
             print("connexion réussi")
             self.switch_window.emit()
 
         else:
-            QtWidgets.QMessageBox.question(self, 'Erreur', 'Utilisateur ou mot de passe incorect!',
-                                           QMessageBox.Close)
+            connection = sqlite3.connect("db.db")
+            result = connection.execute("SELECT * FROM Login WHERE UserCode = ? AND Password = ? AND Access = ?", (uname, passw, accessread))
+            if result.fetchall():
+                print("connexion réussi")
+                self.switch_windowr.emit()
+
+            else:
+                QtWidgets.QMessageBox.question(self, 'Erreur', 'Utilisateur ou mot de passe incorect!', QtWidgets.QMessageBox.Close)
+
 
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
@@ -53,6 +64,129 @@ class Ui_Login(QtWidgets.QWidget):
         self.usager_label.setText("Usager:")
         self.mdp_label.setText("Mot de passe:")
         self.Login_Label.setText("Fenêtre de Connexion")
+
+class Ui_PrincipalReadOnly(QtWidgets.QWidget):
+
+
+    def __init__(self):
+        QtWidgets.QWidget.__init__(self)
+        self.setObjectName("Principal")
+        self.resize(1363, 483)
+        self.centralwidget = QtWidgets.QWidget(self)
+        self.centralwidget.setObjectName("centralwidget")
+        self.pushLogoffButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushLogoffButton.setGeometry(QtCore.QRect(520, 390, 75, 23))
+        self.pushLogoffButton.setObjectName("pushLogoffButton")
+        #self.pushLogoffButton.clicked.connect(self.switch_login.emit)
+        self.pushLogoffButton.clicked.connect(self.close)
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(221, 11, 46, 23))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setGeometry(QtCore.QRect(910, 10, 34, 23))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.label_2.setFont(font)
+        self.label_2.setObjectName("label_2")
+        self.tableWidget = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget.setGeometry(QtCore.QRect(220, 40, 601, 321))
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(7)
+        self.tableWidget.setRowCount(0)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(3, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(4, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(5, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(6, item)
+        self.tableWidget_2 = QtWidgets.QTableWidget(self.centralwidget)
+        self.tableWidget_2.setGeometry(QtCore.QRect(880, 40, 341, 321))
+        self.tableWidget_2.setObjectName("tableWidget_2")
+        self.tableWidget_2.setColumnCount(3)
+        self.tableWidget_2.setRowCount(0)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_2.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_2.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tableWidget_2.setHorizontalHeaderItem(2, item)
+        self.setWindowTitle("RAC")
+        self.pushLogoffButton.setText("Deconnexion")
+        self.label.setText("Client")
+        self.label_2.setText("Film")
+        self.item = self.tableWidget.horizontalHeaderItem(0)
+        self.item.setText("ID")
+        self.item = self.tableWidget.horizontalHeaderItem(1)
+        self.item.setText("Nom")
+        self.item = self.tableWidget.horizontalHeaderItem(2)
+        self.item.setText("New Column")
+        self.item = self.tableWidget.horizontalHeaderItem(3)
+        self.item.setText("Prenom")
+        self.item = self.tableWidget.horizontalHeaderItem(4)
+        self.item.setText("Date_Inscription")
+        self.item = self.tableWidget.horizontalHeaderItem(5)
+        self.item.setText("Courriel")
+        self.item = self.tableWidget.horizontalHeaderItem(6)
+        self.item.setText("Mot de Passe")
+        self.item = self.tableWidget_2.horizontalHeaderItem(0)
+        self.item.setText("Nom")
+        self.item = self.tableWidget_2.horizontalHeaderItem(1)
+        self.item.setText("Durée")
+        self.item = self.tableWidget_2.horizontalHeaderItem(2)
+        self.item.setText("Description")
+        self.pushRefreshButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushRefreshButton.setGeometry(QtCore.QRect(220, 390, 75, 23))
+        self.pushRefreshButton.setObjectName("pushLogoffButton")
+        self.pushRefreshButton.clicked.connect(self.getData)
+        self.pushRefreshButton.setText("Rafraichir")
+        self.getData()
+        self.getDataFilm()
+
+    def getData(self):
+        while self.tableWidget.rowCount() > 0:
+            self.tableWidget.setRowCount(0)
+        conn = sqlite3.connect('db.db')
+        cur = conn.cursor()
+        content = 'SELECT * FROM Client'
+        res = cur.execute(content)
+        self.tableWidget.setRowCount(0)
+        for row_index, row_data in enumerate(res):
+            self.tableWidget.insertRow(row_index)
+            for colm_index, colm_data in enumerate(row_data):
+                self.tableWidget.setItem(row_index, colm_index, QtWidgets.QTableWidgetItem(str(colm_data)))
+        conn.close()
+
+    def getDataFilm(self):
+        while self.tableWidget_2.rowCount() > 0:
+            self.tableWidget_2.setRowCount(0)
+        conn = sqlite3.connect('db.db')
+        cur = conn.cursor()
+        content = 'SELECT * FROM Film'
+        res = cur.execute(content)
+        self.tableWidget_2.setRowCount(0)
+        for row_index, row_data in enumerate(res):
+            self.tableWidget_2.insertRow(row_index)
+            for colm_index, colm_data in enumerate(row_data):
+                self.tableWidget_2.setItem(row_index, colm_index, QtWidgets.QTableWidgetItem(str(colm_data)))
+        conn.close()
+
+
+
+
+
+
+
 
 
 class Ui_Principal(QtWidgets.QWidget):
@@ -528,9 +662,15 @@ class Controller:
     def __init__(self):
         pass
 
+    def showPrincipalReadOnly(self, *args):
+        self.windowPrincipalread = Ui_PrincipalReadOnly()
+        self.windowPrincipalread.show()
+        self.windowLogin.close()
+
     def showLogin(self, *args):
         self.windowLogin = Ui_Login()
         self.windowLogin.switch_window.connect(self.showPrincipal)
+        self.windowLogin.switch_windowr.connect(self.showPrincipalReadOnly)
         self.windowLogin.show()
 
     def showPrincipal(self, *args):
