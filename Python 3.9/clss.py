@@ -69,13 +69,35 @@ class Acteur(Personne):
 #fred = Acteur("fred", "tremblay","Male", "l'étalon noit", "hier", "aujourd'hui")
 #print(fred._nom, fred._prenom, fred._sexe, fred._personnage,fred._demploi, fred._femploi)
 
-class CarteCredit:
+class Employe(Personne):
+    "Classe Acteur"
+
+    def __init__(self, nom, prenom, sexe, dateEmbauche, codeUser, mdp):
+        Personne.__init__(self, nom, prenom, sexe)
+        self._dateEmbauche = dateEmbauche
+        self._codeUser = codeUser
+        self._mdp = mdp
+
+    def getpersonage(self):
+        return self._dateEmbauche
+
+    def getdemploi(self):
+        return self._codeUser
+
+    def getfemploi(self):
+        return self._mdp
+
+#fred = Employe("fred", "tremblay","Male", "l'étalon noit", "hier", "aujourd'hui")
+#print(fred._nom, fred._prenom, fred._sexe, fred._dateEmbauche,fred._codeUser, fred._mdp)
+
+class CarteCredit(Personne):
     "classe carte de crédit"
 
-    def __init__(self, carte, expiration, code):
-        self.carte = carte
-        self.expiration = expiration
-        self.code = code
+    def __init__(self, nom, prenom, sexe, carte, expiration, code):
+        Personne.__init__(nom, prenom, sexe)
+        self._carte = carte
+        self._expiration = expiration
+        self._code = code
 
     def getcarte(self):
         return self._carte
@@ -90,10 +112,11 @@ class CarteCredit:
        # return "Le numero de carte est {}, l'expiration est le  {} et le code secret est {}".format(self._carte,self._expiration, self._code)
 
 
-class Film:
+class Film(Acteur):
     "classe de Film"
 
     def __init__(self, nom, description):
+        Acteur.__init__(self, nom, prenom, sexe, personnage, demploi)
         self._nom = nom
         self._Description = description
 
@@ -105,3 +128,17 @@ class Film:
 
     def __str__(self):
         return "La classe du film est {} et sa descrition est{}".format(self._nom, self._description)
+
+class Categorie(Film):
+    "Classe de catégorie de film"
+
+    def __init__ (self, nom, description):
+        Film.__init__(nom, description)
+        self._nom = nom
+        self._description = description
+
+    def getnom(self):
+        return self._nom
+
+    def getdescription(self):
+        return self._description
