@@ -31,14 +31,14 @@ class Client(Personne):
         self._courriel = courriel
         self._password = password
 
-        def getdateInsc(self):
-            return self._dateInsc
+    def getdateInsc(self):
+        return self._dateInsc
 
-        def getcourriel(self):
-            return self._courriel
+    def getcourriel(self):
+        return self._courriel
 
-        def getpassword(self):
-            return self._password
+    def getpassword(self):
+        return self._password
 
 
 # def __str__(self):
@@ -78,13 +78,13 @@ class Employe(Personne):
         self._codeUser = codeUser
         self._mdp = mdp
 
-    def getpersonage(self):
+    def getdateEmbauche(self):
         return self._dateEmbauche
 
-    def getdemploi(self):
+    def getcodeUser(self):
         return self._codeUser
 
-    def getfemploi(self):
+    def getmdp(self):
         return self._mdp
 
 #fred = Employe("fred", "tremblay","Male", "l'étalon noit", "hier", "aujourd'hui")
@@ -94,7 +94,7 @@ class CarteCredit(Personne):
     "classe carte de crédit"
 
     def __init__(self, nom, prenom, sexe, carte, expiration, code):
-        Personne.__init__(nom, prenom, sexe)
+        Personne.__init__(self, nom, prenom, sexe)
         self._carte = carte
         self._expiration = expiration
         self._code = code
@@ -115,30 +115,30 @@ class CarteCredit(Personne):
 class Film(Acteur):
     "classe de Film"
 
-    def __init__(self, nom, description):
-        Acteur.__init__(self, nom, prenom, sexe, personnage, demploi)
-        self._nom = nom
-        self._Description = description
+    def __init__(self, nom, prenom, sexe, personnage, demploi, femploi, nom_film, description):
+        Acteur.__init__(self, nom, prenom, sexe, personnage, demploi,femploi)
+        self._nom_film = nom_film
+        self._description = description
 
-    def getnom(self):
-        return self._nom
+    def getnom_film(self):
+        return self._nom_film
 
-    def getdescription(self):
+    def get_description(self):
         return self._description
 
-    def __str__(self):
-        return "La classe du film est {} et sa descrition est{}".format(self._nom, self._description)
+    #def __str__(self):
+        #return "La classe du film est {} et sa descrition est{}".format(self._nom, self._description)
 
 class Categorie(Film):
     "Classe de catégorie de film"
 
-    def __init__ (self, nom, description):
-        Film.__init__(nom, description)
-        self._nom = nom
-        self._description = description
+    def __init__ (self, nom, prenom, sexe, personnage, demploi, femploi,nom_film, description, cat_nom, cat_description):
+        Film.__init__(self, nom, prenom, sexe, personnage, demploi, femploi, nom_film, description)
+        self._cat_nom = cat_nom
+        self._cat_description = cat_description
 
-    def getnom(self):
-        return self._nom
+    def getcat_nom(self):
+        return self._cat_nom
 
-    def getdescription(self):
-        return self._description
+    def getcat_description(self):
+        return self._cat_description

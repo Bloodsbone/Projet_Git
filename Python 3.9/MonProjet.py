@@ -16,20 +16,23 @@ class Ui_Login(QtWidgets.QWidget):
         accessread = "r"
         connection = sqlite3.connect("db.db")
         result = connection.execute("SELECT * FROM Login WHERE UserCode = ? AND Password = ? AND Access = ?" , (uname, passw, access))
-
-        if result.fetchall():
-            print("connexion réussi")
-            self.switch_window.emit()
-
-        else:
-            connection = sqlite3.connect("db.db")
-            result = connection.execute("SELECT * FROM Login WHERE UserCode = ? AND Password = ? AND Access = ?", (uname, passw, accessread))
+        try:
             if result.fetchall():
                 print("connexion réussi")
-                self.switch_windowr.emit()
+                self.switch_window.emit()
 
             else:
-                QtWidgets.QMessageBox.question(self, 'Erreur', 'Utilisateur ou mot de passe incorect!', QtWidgets.QMessageBox.Close)
+                connection = sqlite3.connect("db.db")
+                result = connection.execute("SELECT * FROM Login WHERE UserCode = ? AND Password = ? AND Access = ?", (uname, passw, accessread))
+                if result.fetchall():
+                    print("connexion réussi")
+                    self.switch_windowr.emit()
+
+                else:
+                    QtWidgets.QMessageBox.question(self, 'Erreur', 'Utilisateur ou mot de passe incorect!', QtWidgets.QMessageBox.Close)
+
+        except :
+            print ("Erreur de connexion inconnu")
 
 
     def __init__(self):
@@ -67,6 +70,7 @@ class Ui_Login(QtWidgets.QWidget):
 
 class Ui_PrincipalReadOnly(QtWidgets.QWidget):
 
+    switch_login = QtCore.pyqtSignal()
 
     def __init__(self):
         QtWidgets.QWidget.__init__(self)
@@ -77,7 +81,7 @@ class Ui_PrincipalReadOnly(QtWidgets.QWidget):
         self.pushLogoffButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushLogoffButton.setGeometry(QtCore.QRect(520, 390, 75, 23))
         self.pushLogoffButton.setObjectName("pushLogoffButton")
-        #self.pushLogoffButton.clicked.connect(self.switch_login.emit)
+        self.pushLogoffButton.clicked.connect(self.switch_login.emit)
         self.pushLogoffButton.clicked.connect(self.close)
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(221, 11, 46, 23))
@@ -182,13 +186,6 @@ class Ui_PrincipalReadOnly(QtWidgets.QWidget):
         conn.close()
 
 
-
-
-
-
-
-
-
 class Ui_Principal(QtWidgets.QWidget):
 
     switch_login = QtCore.pyqtSignal()
@@ -205,7 +202,7 @@ class Ui_Principal(QtWidgets.QWidget):
         self.pushLogoffButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushLogoffButton.setGeometry(QtCore.QRect(520, 390, 75, 23))
         self.pushLogoffButton.setObjectName("pushLogoffButton")
-        self.pushLogoffButton.clicked.connect(self.switch_login.emit)
+        self.pushLogoffButton.clicked.connect(self.switch_login)
         self.pushLogoffButton.clicked.connect(self.close)
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(221, 11, 46, 23))
@@ -319,22 +316,25 @@ class Ui_Principal(QtWidgets.QWidget):
         conn.close()
 
     def delData(self):
-        conn = sqlite3.connect('db.db')
-        cur = conn.cursor()
-        client = 'SELECT * FROM Client'
-        res = cur.execute(client)
-        for row in enumerate(res):
-            if row[0]  == self.tableWidget.currentRow():
-                data = row[1]
-                Nom = data[1]
-                Prenom = data[2]
-                Sexe = data[3]
-                Date_Inscription = data[4]
-                Courriel = data[5]
-                Mot_de_passe = data[6]
-                cur.execute("DELETE FROM Client WHERE Nom=? AND Prenom=? AND Sexe=? AND Date_Inscription=? AND Courriel=? AND Mot_de_passe=?",(Nom,Prenom,Sexe,Date_Inscription,Courriel,Mot_de_passe))
-                conn.commit()
-        self.getData()
+        try:
+            conn = sqlite3.connect('db.db')
+            cur = conn.cursor()
+            client = 'SELECT * FROM Client'
+            res = cur.execute(client)
+            for row in enumerate(res):
+                if row[0]  == self.tableWidget.currentRow():
+                    data = row[1]
+                    Nom = data[1]
+                    Prenom = data[2]
+                    Sexe = data[3]
+                    Date_Inscription = data[4]
+                    Courriel = data[5]
+                    Mot_de_passe = data[6]
+                    cur.execute("DELETE FROM Client WHERE Nom=? AND Prenom=? AND Sexe=? AND Date_Inscription=? AND Courriel=? AND Mot_de_passe=?",(Nom,Prenom,Sexe,Date_Inscription,Courriel,Mot_de_passe))
+                    conn.commit()
+            self.getData()
+        except:
+            print ("Erreur inconnue!")
 
     def getDataFilm(self):
         while self.tableWidget_2.rowCount() > 0:
@@ -351,11 +351,13 @@ class Ui_Principal(QtWidgets.QWidget):
         conn.close()
 
     def messageSuppression(self):
-        res = QtWidgets.QMessageBox.question(self, 'sure?', 'êtes-vous sur de vouloir supprimer?', QMessageBox.Yes | QMessageBox.No)
-        if res == QtWidgets.QMessageBox.Yes:
-            print("yes")
-            self.delData()
-
+        try:
+            res = QtWidgets.QMessageBox.question(self, 'sure?', 'êtes-vous sur de vouloir supprimer?', QMessageBox.Yes | QMessageBox.No)
+            if res == QtWidgets.QMessageBox.Yes:
+                print("yes")
+                self.delData()
+        except:
+            print ("Erreur Inconnue")
 class Ui_NewClient(QtWidgets.QWidget):
 
 
@@ -371,23 +373,25 @@ class Ui_NewClient(QtWidgets.QWidget):
         c = conn.cursor()
         c.execute('SELECT * FROM Client WHERE Courriel = ?', [courriel])
         result = c.fetchone()
-
-        if result:
-            QtWidgets.QMessageBox.question(self, 'Erreur', 'Courriel déja existant!',
+        try:
+            if result:
+                QtWidgets.QMessageBox.question(self, 'Erreur', 'Courriel déja existant!',
                                                  QMessageBox.Close)
 
-        elif len(password) < 8:
-            QtWidgets.QMessageBox.question(self, 'Erreur', 'Mot de passe trop court!',
+            elif len(password) < 8:
+                QtWidgets.QMessageBox.question(self, 'Erreur', 'Mot de passe trop court!',
                                                  QMessageBox.Close)
 
-        else:
-            conn = sqlite3.connect("db.db")
-            c = conn.cursor()
-            c.execute(
-                'INSERT INTO Client (Nom, Prenom, Sexe, Date_Inscription, Courriel, Mot_de_passe) VALUES (?,?,?,?,?,?)',
-                user_info)
-            conn.commit()
-            self.close()
+            else:
+                conn = sqlite3.connect("db.db")
+                c = conn.cursor()
+                c.execute(
+                    'INSERT INTO Client (Nom, Prenom, Sexe, Date_Inscription, Courriel, Mot_de_passe) VALUES (?,?,?,?,?,?)',
+                    user_info)
+                conn.commit()
+                self.close()
+        except:
+            print("Erreur Fatal")
 
 
 
@@ -623,35 +627,38 @@ class Ui_ModClient(QtWidgets.QWidget):
         conn.close()
 
     def updateData(self):
-        id = self.lineIdEdit.text()
-        prenom = self.lineEditPrenom.text()
-        nom = self.lineEditNom.text()
-        sexe = self.lineEditSexe.text()
-        dateInsc = self.lineEditDateInscription.text()
-        courriel = self.lineEditCourriel.text()
-        password = self.lineEditMdp.text()
-        user_info = [prenom, nom, sexe, dateInsc, courriel, password]
-        conn = sqlite3.connect("db.db")
-        c = conn.cursor()
-        c.execute('SELECT * FROM Client WHERE Courriel = ?', [courriel])
-        result = c.fetchone()
-
-        if result:
-            QtWidgets.QMessageBox.question(self, 'Erreur', 'Courriel déja existant!',
-                                                 QMessageBox.Close)
-
-        elif len(password) < 8:
-            QtWidgets.QMessageBox.question(self, 'Erreur', 'Mot de passe trop court!',
-                                                 QMessageBox.Close)
-
-        else:
+        try:
+            id = self.lineIdEdit.text()
+            prenom = self.lineEditPrenom.text()
+            nom = self.lineEditNom.text()
+            sexe = self.lineEditSexe.text()
+            dateInsc = self.lineEditDateInscription.text()
+            courriel = self.lineEditCourriel.text()
+            password = self.lineEditMdp.text()
+            user_info = [prenom, nom, sexe, dateInsc, courriel, password]
             conn = sqlite3.connect("db.db")
             c = conn.cursor()
-            c.execute(
-                'UPDATE Client set Nom = ?, Prenom = ?, Sexe = ?, Date_Inscription = ?, Courriel = ?, Mot_de_passe = ? WHERE ID = ?',
-                (nom, prenom, sexe, dateInsc, courriel, password, id))
-            conn.commit()
-            self.close()
+            c.execute('SELECT * FROM Client WHERE Courriel = ?', [courriel])
+            result = c.fetchone()
+
+            if result:
+                QtWidgets.QMessageBox.question(self, 'Erreur', 'Courriel déja existant!',
+                                                 QMessageBox.Close)
+
+            elif len(password) < 8:
+                QtWidgets.QMessageBox.question(self, 'Erreur', 'Mot de passe trop court!',
+                                                    QMessageBox.Close)
+
+            else:
+                conn = sqlite3.connect("db.db")
+                c = conn.cursor()
+                c.execute(
+                    'UPDATE Client set Nom = ?, Prenom = ?, Sexe = ?, Date_Inscription = ?, Courriel = ?, Mot_de_passe = ? WHERE ID = ?',
+                    (nom, prenom, sexe, dateInsc, courriel, password, id))
+                conn.commit()
+                self.close()
+        except:
+            print ("Impossible de rafraichir les clients")
 
 
 
